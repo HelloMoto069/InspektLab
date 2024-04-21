@@ -177,7 +177,7 @@ const CameraCapture = () => {
       </div>
       {!cameraStarted && (
         <div style={{ marginLeft: 17, marginTop: 7 }}>
-          <Button color="secondary" onClick={startCamera}>
+          <Button className="button" color="secondary" onClick={startCamera}>
             Start Camera
           </Button>
         </div>
@@ -187,13 +187,13 @@ const CameraCapture = () => {
           <div
             style={{
               width: "50%",
-              marginLeft: "25%",
+              display: "flex",
               justifyContent: "center",
               alignContent: "center",
               alignItems: "center",
             }}
           >
-            <Card sx={{ width: 740 }}>
+            <Card sx={{ width: 740 }} className="card">
               <div
                 className="webcam-container"
                 style={{
@@ -233,12 +233,16 @@ const CameraCapture = () => {
                   alignItems: "center",
                 }}
               >
-                <Button color="secondary" onClick={switchCamera}>
+                <Button
+                  className="button"
+                  color="secondary"
+                  onClick={switchCamera}
+                >
                   {frontCamera
                     ? "Switch to Back Camera"
                     : "Switch to Front Camera"}
                 </Button>
-                <Button color="secondary" onClick={capture}>
+                <Button className="button" color="secondary" onClick={capture}>
                   Capture Image
                 </Button>
               </div>
@@ -257,7 +261,7 @@ const CameraCapture = () => {
       >
         {capturedImages.map((image, index) => (
           <>
-            <Card sx={{ width: 470 }}>
+            <Card sx={{ width: 470 }} className="card">
               <div key={index} className="gallery-item">
                 <img
                   src={image.original}
@@ -275,6 +279,7 @@ const CameraCapture = () => {
               </div>
               <CardContent sx={{ justifyContent: "flex-end" }}>
                 <Button
+                  className="button"
                   variant="outlined"
                   startIcon={<DeleteIcon />}
                   onClick={() => deleteImage(index)}
@@ -288,6 +293,7 @@ const CameraCapture = () => {
         ))}
       </div>
       <Modal
+        className="modal"
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         contentLabel="Captured Image Modal"
@@ -319,11 +325,13 @@ const CameraCapture = () => {
                 }}
               >
                 <Button
+                  className="button"
                   variant="outlined"
                   startIcon={<DeleteIcon />}
                   onClick={() => deleteImage(selectedImageIndex)}
                 />
                 <Button
+                  className="button"
                   variant="outlined"
                   startIcon={<CloseIcon />}
                   onClick={closeModal}
