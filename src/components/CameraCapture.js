@@ -15,14 +15,12 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Card from "@mui/joy/Card";
-import CardCover from "@mui/joy/CardCover";
 import CardContent from "@mui/joy/CardContent";
-import Typography from "@mui/joy/Typography";
+import CloseIcon from "@mui/icons-material/Close";
 import "react-image-gallery/styles/css/image-gallery.css";
-// import "./CameraCapture.css";
 
 const CameraCapture = () => {
-  const [frontCamera, setFrontCamera] = useState(true); // Default to front camera
+  const [frontCamera, setFrontCamera] = useState(true);
   const [zoom, setZoom] = useState(1);
   const [aspectRatio, setAspectRatio] = useState("16:9");
   const webcamRef = useRef(null);
@@ -30,6 +28,7 @@ const CameraCapture = () => {
   const [cameraStarted, setCameraStarted] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalHeight, setModalHeight] = useState(window.innerHeight - 170);
 
   useEffect(() => {
     const savedImages =
@@ -102,7 +101,6 @@ const CameraCapture = () => {
 
   const switchCamera = () => {
     setFrontCamera((prev) => !prev);
-    setCameraStarted(false); // Restart camera with the new facing mode
   };
 
   const openModal = (index) => {
@@ -113,20 +111,29 @@ const CameraCapture = () => {
   const closeModal = () => {
     setSelectedImageIndex(null);
     setModalIsOpen(false);
-
-    // Check if there are no more images left to show
-    if (selectedImageIndex === null && capturedImages.length === 0) {
-      setModalIsOpen(false);
-    }
   };
 
+  useEffect(() => {
+    if (selectedImageIndex === null || capturedImages.length === 0) {
+      setModalIsOpen(false);
+    }
+  }, [capturedImages.length]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setModalHeight(window.innerHeight - 170);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
-    <div>
-      <div
-        style={{
-          marginLeft: 17,
-        }}
-      >
+    <div style={{ margin: 17 }}>
+      <div style={{ marginLeft: 17 }}>
         <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
           <ZoomInRoundedIcon />
           <label htmlFor="zoom">Zoom:</label>
@@ -151,47 +158,8 @@ const CameraCapture = () => {
             </Stack>
           </Box>
         </Stack>
-        {/* <input
-          type="range"
-          id="zoom"
-          name="zoom"
-          min="1"
-          max="3"
-          step="0.1"
-          value={zoom}
-          onChange={handleZoomChange}
-        /> */}
-        {/* <Box sx={{ width: 200 }}>
-          <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
-            <RemoveCircleRoundedIcon />
-            <Slider
-              aria-label="zoom"
-              value={zoom}
-              onChange={handleZoomChange}
-              step={0.1}
-              marks
-              min={1}
-              max={4}
-            />
-            <AddCircleRoundedIcon />
-          </Stack>
-        </Box> */}
       </div>
-      <div
-        style={{
-          marginLeft: 17,
-        }}
-      >
-        {/* <label htmlFor="aspectRatio">Aspect Ratio:</label>
-        <select
-          id="aspectRatio"
-          value={aspectRatio}
-          onChange={handleAspectRatioChange}
-        >
-          <option value="16:9">16:9</option>
-          <option value="4:3">4:3</option>
-          <option value="1:1">1:1</option>
-        </select> */}
+      <div style={{ marginLeft: 17 }}>
         <FormControl sx={{ minWidth: 220 }}>
           <InputLabel id="aspectRatio">Aspect Ratio:</InputLabel>
           <Select
@@ -207,14 +175,8 @@ const CameraCapture = () => {
           </Select>
         </FormControl>
       </div>
-
       {!cameraStarted && (
-        <div
-          style={{
-            marginLeft: 17,
-          }}
-        >
-          {/* <button onClick={startCamera}>Start Camera</button> */}
+        <div style={{ marginLeft: 17, marginTop: 7 }}>
           <Button color="secondary" onClick={startCamera}>
             Start Camera
           </Button>
@@ -231,79 +193,114 @@ const CameraCapture = () => {
               alignItems: "center",
             }}
           >
-            <div
-              className="webcam-container"
-              style={{
-                width: "100%",
-                height: 0,
-                paddingBottom:
-                  aspectRatio === "16:9"
-                    ? "56.25%"
-                    : aspectRatio === "4:3"
-                    ? "75%"
-                    : "100%",
-                position: "relative",
-                overflow: "hidden",
-              }}
-            >
-              <Webcam
-                ref={webcamRef}
-                videoConstraints={{
-                  facingMode: frontCamera ? "user" : "environment",
-                }}
-                audio={false}
-                screenshotFormat="image/png"
+            <Card sx={{ width: 740 }}>
+              <div
+                className="webcam-container"
                 style={{
-                  position: "absolute",
                   width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  transform: `scale(${zoom})`,
+                  height: 0,
+                  paddingBottom:
+                    aspectRatio === "16:9"
+                      ? "56.25%"
+                      : aspectRatio === "4:3"
+                      ? "75%"
+                      : "100%",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
-              />
-            </div>
-            <div>
-              <button onClick={switchCamera}>
-                {frontCamera
-                  ? "Switch to Back Camera"
-                  : "Switch to Front Camera"}
-              </button>
-              <button onClick={capture}>Capture Image</button>
-            </div>
+              >
+                <Webcam
+                  ref={webcamRef}
+                  videoConstraints={{
+                    facingMode: frontCamera ? "user" : "environment",
+                  }}
+                  audio={false}
+                  screenshotFormat="image/png"
+                  style={{
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    transform: `scale(${zoom})`,
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-around",
+                  alignContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Button color="secondary" onClick={switchCamera}>
+                  {frontCamera
+                    ? "Switch to Back Camera"
+                    : "Switch to Front Camera"}
+                </Button>
+                <Button color="secondary" onClick={capture}>
+                  Capture Image
+                </Button>
+              </div>
+            </Card>
           </div>
         </>
       )}
-      <div className="gallery">
+      <div
+        className="gallery"
+        style={{
+          display: "flex",
+          justifyContent: "space-around",
+          alignContent: "center",
+          alignItems: "center",
+        }}
+      >
         {capturedImages.map((image, index) => (
-          <div key={index} className="gallery-item">
-            <img
-              src={image.original}
-              alt={`Captured ${index}`}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                transition: "transform 0.2s",
-                cursor: "pointer",
-              }}
-              className="zoomable-image"
-              onClick={() => openModal(index)}
-            />
-            {/* <button onClick={() => deleteImage(index)}>Delete</button> */}
-            <Button
-              variant="outlined"
-              startIcon={<DeleteIcon />}
-              onClick={() => deleteImage(index)}
-            >
-              Delete
-            </Button>
-          </div>
+          <>
+            <Card sx={{ width: 470 }}>
+              <div key={index} className="gallery-item">
+                <img
+                  src={image.original}
+                  alt={`Captured ${index}`}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    transition: "transform 0.2s",
+                    cursor: "pointer",
+                  }}
+                  className="zoomable-image"
+                  onClick={() => openModal(index)}
+                />
+              </div>
+              <CardContent sx={{ justifyContent: "flex-end" }}>
+                <Button
+                  variant="outlined"
+                  startIcon={<DeleteIcon />}
+                  onClick={() => deleteImage(index)}
+                  style={{
+                    width: 74,
+                  }}
+                ></Button>
+              </CardContent>
+            </Card>
+          </>
         ))}
       </div>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         contentLabel="Captured Image Modal"
+        style={{
+          content: {
+            height: modalHeight,
+            justifyContent: "center",
+            alignContent: "center",
+            alignItems: "center",
+            width: "50%",
+            marginLeft: "25%",
+          },
+        }}
       >
         <ImageGallery
           items={capturedImages}
@@ -314,14 +311,24 @@ const CameraCapture = () => {
           onThumbnailClick={closeModal}
           renderCustomControls={() => (
             <>
-              <button onClick={closeModal}>Close</button>
-              <Button
-                variant="outlined"
-                startIcon={<DeleteIcon />}
-                onClick={() => deleteImage(selectedImageIndex)}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  margin: 17,
+                }}
               >
-                Delete
-              </Button>
+                <Button
+                  variant="outlined"
+                  startIcon={<DeleteIcon />}
+                  onClick={() => deleteImage(selectedImageIndex)}
+                />
+                <Button
+                  variant="outlined"
+                  startIcon={<CloseIcon />}
+                  onClick={closeModal}
+                />
+              </div>
             </>
           )}
         />
