@@ -186,7 +186,7 @@ const CameraCapture = () => {
         <>
           <div
             style={{
-              width: "50%",
+              // width: "50%",
               display: "flex",
               justifyContent: "center",
               alignContent: "center",
