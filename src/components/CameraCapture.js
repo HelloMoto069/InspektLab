@@ -19,6 +19,8 @@ import CardContent from "@mui/joy/CardContent";
 import CloseIcon from "@mui/icons-material/Close";
 import "react-image-gallery/styles/css/image-gallery.css";
 
+Modal.setAppElement("#root");
+
 const CameraCapture = () => {
   const [frontCamera, setFrontCamera] = useState(true);
   const [zoom, setZoom] = useState(1);
@@ -108,13 +110,22 @@ const CameraCapture = () => {
     setModalIsOpen(true);
   };
 
+  useEffect(() => {
+    if (
+      selectedImageIndex !== null &&
+      selectedImageIndex >= capturedImages.length
+    ) {
+      openModal(0);
+    }
+  }, [capturedImages.length, selectedImageIndex]);
+
   const closeModal = () => {
     setSelectedImageIndex(null);
     setModalIsOpen(false);
   };
 
   useEffect(() => {
-    if (selectedImageIndex === null || capturedImages.length === 0) {
+    if (capturedImages.length === 0) {
       setModalIsOpen(false);
     }
   }, [capturedImages.length]);
@@ -130,15 +141,6 @@ const CameraCapture = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
-    useEffect(() => {
-    if (
-      selectedImageIndex !== null &&
-      selectedImageIndex >= capturedImages.length
-    ) {
-      openModal(0);
-    }
-  }, [capturedImages.length, selectedImageIndex]);
 
   return (
     <div style={{ margin: 17 }}>
@@ -285,7 +287,7 @@ const CameraCapture = () => {
           >
             {capturedImages.map((image, index) => (
               <>
-                <Card sx={{ width: 470 }} className="card">
+                <Card sx={{ width: 270 }} className="card">
                   <div key={index} className="gallery-item">
                     <img
                       src={image.original}
