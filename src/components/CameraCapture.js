@@ -24,8 +24,51 @@ const CameraCapture = () => {
     setCameraStarted(true);
   };
 
+  // const capture = useCallback(() => {
+  //   const imageSrc = webcamRef.current.getScreenshot();
+  //   if (imageSrc) {
+  //     const updatedImages = [...capturedImages, { original: imageSrc }];
+  //     localStorage.setItem("capturedImages", JSON.stringify(updatedImages));
+  //     setCapturedImages(updatedImages);
+  //   } else {
+  //     console.error("Failed to capture image.");
+  //   }
+  // }, [capturedImages]);
+
   const capture = useCallback(() => {
-    const imageSrc = webcamRef.current.getScreenshot();
+    const container = webcamRef.current.video;
+    const canvas = document.createElement("canvas");
+
+    // Calculate the dimensions of the visible portion inside the webcam container
+    const containerWidth = container.offsetWidth;
+    const containerHeight = container.offsetHeight;
+    const zoomedWidth = containerWidth / zoom;
+    const zoomedHeight = containerHeight / zoom;
+    const offsetX = (containerWidth - zoomedWidth) / 2;
+    const offsetY = (containerHeight - zoomedHeight) / 2;
+
+    // Set canvas dimensions
+    canvas.width = zoomedWidth;
+    canvas.height = zoomedHeight;
+
+    // Draw the webcam video frame on the canvas with applied zoom
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(
+      container,
+      offsetX,
+      offsetY,
+      zoomedWidth,
+      zoomedHeight,
+      0,
+      0,
+      zoomedWidth,
+      zoomedHeight
+    );
+
+    // Convert canvas to image
+    const imageSrc = canvas.toDataURL("image/png");
+
+    // Save the captured image
     if (imageSrc) {
       const updatedImages = [...capturedImages, { original: imageSrc }];
       localStorage.setItem("capturedImages", JSON.stringify(updatedImages));
@@ -33,7 +76,7 @@ const CameraCapture = () => {
     } else {
       console.error("Failed to capture image.");
     }
-  }, [capturedImages]);
+  }, [capturedImages, zoom]);
 
   const handleZoomChange = (event) => {
     setZoom(parseFloat(event.target.value));
@@ -64,10 +107,20 @@ const CameraCapture = () => {
   const closeModal = () => {
     setSelectedImageIndex(null);
     setModalIsOpen(false);
+
+    // Check if there are no more images left to show
+    if (selectedImageIndex === null && capturedImages.length === 0) {
+      setModalIsOpen(false);
+    }
   };
 
   return (
-    <div>
+    <div
+      style={{
+        overflow: "hidden",
+        width: "fit-content",
+      }}
+    >
       <div>
         <label htmlFor="zoom">Zoom:</label>
         <input
@@ -100,7 +153,10 @@ const CameraCapture = () => {
       )}
       {cameraStarted && (
         <>
-          <div className="webcam-container">
+          <div
+            className="webcam-container"
+            style={{ width: "100%", height: "auto", overflow: "hidden" }}
+          >
             <Webcam
               ref={webcamRef}
               videoConstraints={{
