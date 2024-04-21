@@ -131,6 +131,15 @@ const CameraCapture = () => {
     };
   }, []);
 
+    useEffect(() => {
+    if (
+      selectedImageIndex !== null &&
+      selectedImageIndex >= capturedImages.length
+    ) {
+      openModal(0);
+    }
+  }, [capturedImages.length, selectedImageIndex]);
+
   return (
     <div style={{ margin: 17 }}>
       {!modalIsOpen ? (
