@@ -1,0 +1,20 @@
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.zoomable-image:hover {
+  transform: scale(1.1);
+}
+
+.image-frame {
+  border: 2px solid #ccc;
+  padding: 5px;
+  border-radius: 5px;
+}
