@@ -133,165 +133,182 @@ const CameraCapture = () => {
 
   return (
     <div style={{ margin: 17 }}>
-      <div style={{ marginLeft: 17 }}>
-        <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
-          <ZoomInRoundedIcon />
-          <label htmlFor="zoom">Zoom:</label>
-          <Box sx={{ width: 200 }}>
+      {!modalIsOpen ? (
+        <>
+          <div style={{ marginLeft: 17 }}>
             <Stack
               spacing={2}
               direction="row"
               sx={{ mb: 1 }}
               alignItems="center"
             >
-              <RemoveCircleRoundedIcon />
-              <Slider
-                aria-label="zoom"
-                value={zoom}
-                onChange={handleZoomChange}
-                step={0.1}
-                marks
-                min={1}
-                max={4}
-              />
-              <AddCircleRoundedIcon />
+              <ZoomInRoundedIcon />
+              <label htmlFor="zoom">Zoom:</label>
+              <Box sx={{ width: 200 }}>
+                <Stack
+                  spacing={2}
+                  direction="row"
+                  sx={{ mb: 1 }}
+                  alignItems="center"
+                >
+                  <RemoveCircleRoundedIcon />
+                  <Slider
+                    aria-label="zoom"
+                    value={zoom}
+                    onChange={handleZoomChange}
+                    step={0.1}
+                    marks
+                    min={1}
+                    max={4}
+                  />
+                  <AddCircleRoundedIcon />
+                </Stack>
+              </Box>
             </Stack>
-          </Box>
-        </Stack>
-      </div>
-      <div style={{ marginLeft: 17 }}>
-        <FormControl sx={{ minWidth: 220 }}>
-          <InputLabel id="aspectRatio">Aspect Ratio:</InputLabel>
-          <Select
-            labelId="aspectRatio"
-            id="aspectRatio"
-            value={aspectRatio}
-            label="Aspect Ratio:"
-            onChange={handleAspectRatioChange}
-          >
-            <MenuItem value={"16:9"}>16:9</MenuItem>
-            <MenuItem value={"4:3"}>4:3</MenuItem>
-            <MenuItem value={"1:1"}>1:1</MenuItem>
-          </Select>
-        </FormControl>
-      </div>
-      {!cameraStarted && (
-        <div style={{ marginLeft: 17, marginTop: 7 }}>
-          <Button className="button" color="secondary" onClick={startCamera}>
-            Start Camera
-          </Button>
-        </div>
-      )}
-      {cameraStarted && (
-        <>
-          <div
-            style={{
-              // width: "50%",
-              display: "flex",
-              justifyContent: "center",
-              alignContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Card sx={{ width: 740 }} className="card">
-              <div
-                className="webcam-container"
-                style={{
-                  width: "100%",
-                  height: 0,
-                  paddingBottom:
-                    aspectRatio === "16:9"
-                      ? "56.25%"
-                      : aspectRatio === "4:3"
-                      ? "75%"
-                      : "100%",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
+          </div>
+          <div style={{ marginLeft: 17 }}>
+            <FormControl sx={{ minWidth: 220 }}>
+              <InputLabel id="aspectRatio">Aspect Ratio:</InputLabel>
+              <Select
+                labelId="aspectRatio"
+                id="aspectRatio"
+                value={aspectRatio}
+                label="Aspect Ratio:"
+                onChange={handleAspectRatioChange}
               >
-                <Webcam
-                  ref={webcamRef}
-                  videoConstraints={{
-                    facingMode: frontCamera ? "user" : "environment",
-                  }}
-                  audio={false}
-                  screenshotFormat="image/png"
-                  style={{
-                    position: "absolute",
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    transform: `scale(${zoom})`,
-                  }}
-                />
-              </div>
+                <MenuItem value={"16:9"}>16:9</MenuItem>
+                <MenuItem value={"4:3"}>4:3</MenuItem>
+                <MenuItem value={"1:1"}>1:1</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+          {!cameraStarted && (
+            <div style={{ marginLeft: 17, marginTop: 7 }}>
+              <Button
+                className="button"
+                color="secondary"
+                onClick={startCamera}
+              >
+                Start Camera
+              </Button>
+            </div>
+          )}
+          {cameraStarted && (
+            <>
               <div
                 style={{
+                  // width: "50%",
                   display: "flex",
-                  justifyContent: "space-around",
+                  justifyContent: "center",
                   alignContent: "center",
                   alignItems: "center",
                 }}
               >
-                <Button
-                  className="button"
-                  color="secondary"
-                  onClick={switchCamera}
-                >
-                  {frontCamera
-                    ? "Switch to Back Camera"
-                    : "Switch to Front Camera"}
-                </Button>
-                <Button className="button" color="secondary" onClick={capture}>
-                  Capture Image
-                </Button>
+                <Card sx={{ width: 740 }} className="card">
+                  <div
+                    className="webcam-container"
+                    style={{
+                      width: "100%",
+                      height: 0,
+                      paddingBottom:
+                        aspectRatio === "16:9"
+                          ? "56.25%"
+                          : aspectRatio === "4:3"
+                          ? "75%"
+                          : "100%",
+                      position: "relative",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Webcam
+                      ref={webcamRef}
+                      videoConstraints={{
+                        facingMode: frontCamera ? "user" : "environment",
+                      }}
+                      audio={false}
+                      screenshotFormat="image/png"
+                      style={{
+                        position: "absolute",
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        transform: `scale(${zoom})`,
+                      }}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-around",
+                      alignContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Button
+                      className="button"
+                      color="secondary"
+                      onClick={switchCamera}
+                    >
+                      {frontCamera
+                        ? "Switch to Back Camera"
+                        : "Switch to Front Camera"}
+                    </Button>
+                    <Button
+                      className="button"
+                      color="secondary"
+                      onClick={capture}
+                    >
+                      Capture Image
+                    </Button>
+                  </div>
+                </Card>
               </div>
-            </Card>
+            </>
+          )}
+          <div
+            className="gallery"
+            style={{
+              display: "flex",
+              justifyContent: "space-around",
+              alignContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {capturedImages.map((image, index) => (
+              <>
+                <Card sx={{ width: 470 }} className="card">
+                  <div key={index} className="gallery-item">
+                    <img
+                      src={image.original}
+                      alt={`Captured ${index}`}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        transition: "transform 0.2s",
+                        cursor: "pointer",
+                      }}
+                      className="zoomable-image"
+                      onClick={() => openModal(index)}
+                    />
+                  </div>
+                  <CardContent sx={{ justifyContent: "flex-end" }}>
+                    <Button
+                      className="button"
+                      variant="outlined"
+                      startIcon={<DeleteIcon />}
+                      onClick={() => deleteImage(index)}
+                      style={{
+                        width: 74,
+                      }}
+                    ></Button>
+                  </CardContent>
+                </Card>
+              </>
+            ))}
           </div>
         </>
-      )}
-      <div
-        className="gallery"
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          alignContent: "center",
-          alignItems: "center",
-        }}
-      >
-        {capturedImages.map((image, index) => (
-          <>
-            <Card sx={{ width: 470 }} className="card">
-              <div key={index} className="gallery-item">
-                <img
-                  src={image.original}
-                  alt={`Captured ${index}`}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    transition: "transform 0.2s",
-                    cursor: "pointer",
-                  }}
-                  className="zoomable-image"
-                  onClick={() => openModal(index)}
-                />
-              </div>
-              <CardContent sx={{ justifyContent: "flex-end" }}>
-                <Button
-                  className="button"
-                  variant="outlined"
-                  startIcon={<DeleteIcon />}
-                  onClick={() => deleteImage(index)}
-                  style={{
-                    width: 74,
-                  }}
-                ></Button>
-              </CardContent>
-            </Card>
-          </>
-        ))}
-      </div>
+      ) : null}
       <Modal
         className="modal"
         isOpen={modalIsOpen}
